@@ -1,0 +1,529 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>三角形外角和小课堂</title>
+  <style>
+    :root {
+      --yellow: #ffe066;
+      --blue: #6ec6ff;
+      --green: #8be28b;
+      --pink: #ffb3c6;
+      --text: #17324d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Comic Sans MS", "Segoe UI", system-ui, sans-serif;
+      background: linear-gradient(135deg, #f8fbff 0%, #fff7ea 100%);
+      color: var(--text);
+      padding: 24px;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .tag {
+      background: var(--blue);
+      color: #0c2a46;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: 1px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .steps {
+      display: grid;
+      gap: 10px;
+    }
+    .step {
+      background: #f3f9ff;
+      border: 2px dashed #c4e5ff;
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .step.active {
+      background: var(--yellow);
+      transform: translateY(-2px);
+    }
+    .step .num {
+      background: #fff;
+      color: #0c2a46;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    .controls label {
+      display: block;
+      font-weight: 700;
+      margin: 12px 0 6px;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: #ff7b72;
+    }
+    .bubble {
+      background: var(--pink);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      display: inline-block;
+      box-shadow: 0 6px 18px rgba(255, 99, 132, 0.15);
+      margin-bottom: 8px;
+    }
+    .pill {
+      background: #e8f6e8;
+      border-radius: 12px;
+      padding: 8px 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      color: #116611;
+      margin-right: 8px;
+    }
+    .button {
+      background: #ff7b72;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 10px 18px rgba(255, 123, 114, 0.25);
+    }
+    .button:hover { transform: translateY(-1px); }
+    .button:active { transform: translateY(1px); }
+    .results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .result-box {
+      background: #f9f9ff;
+      border-radius: 12px;
+      padding: 10px;
+      font-weight: 700;
+      text-align: center;
+      box-shadow: inset 0 0 0 2px #eef2ff;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      max-height: 380px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(110,198,255,0.08), rgba(255,224,102,0.08));
+    }
+    .note {
+      background: #f0fff4;
+      border: 2px dashed #c8f0d0;
+      border-radius: 12px;
+      padding: 10px;
+      font-weight: 700;
+      color: #0b6b3c;
+    }
+    .quiz {
+      background: #fff4f0;
+      border-radius: 12px;
+      padding: 12px;
+      font-weight: 700;
+      display: grid;
+      gap: 8px;
+    }
+    .quiz input {
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 2px solid #ffd1c7;
+      font-size: 16px;
+      width: 120px;
+    }
+    .answer {
+      font-weight: 800;
+    }
+    .handle {
+      cursor: grab;
+      stroke: #0c2a46;
+      stroke-width: 2;
+    }
+    .handle:active { cursor: grabbing; }
+    .handle-a { fill: #ff7b72; }
+    .handle-b { fill: #6ec6ff; }
+    .handle-c { fill: #8be28b; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="tag">互动练习</div>
+    <h1>三角形外角和小课堂：证明 ∠1 + ∠2 + ∠3 = 360°</h1>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <div class="bubble">故事：把三角形的三条边都向外延长，就得到三个外角 ∠1、∠2、∠3。</div>
+      <p><strong>目标：</strong>向小学生讲清楚：不管三角形长什么样，三个外角的总和一定是 360°！</p>
+      <div class="steps" id="steps">
+        <div class="step active"><span class="num">1</span>认识：三角形的内角和是 180°。</div>
+        <div class="step"><span class="num">2</span>每个外角和它旁边的内角凑成一条直线，直线是 180°。</div>
+        <div class="step"><span class="num">3</span>所以 ∠1 = 180° - ∠A，∠2 = 180° - ∠B，∠3 = 180° - ∠C。</div>
+        <div class="step"><span class="num">4</span>把它们加起来：3 × 180° - (∠A + ∠B + ∠C) = 540° - 180° = 360°。</div>
+      </div>
+      <div style="margin-top:12px;">
+        <button class="button" id="nextStep">下一步</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="bubble">拖动彩色圆点，动手改变三角形形状</div>
+      <svg viewBox="0 0 340 320" aria-label="可拖动的三角形示意图">
+        <!-- 外延直线 -->
+        <line id="extA" x1="160" y1="80" x2="160" y2="40" stroke="#888" stroke-width="3" stroke-dasharray="6 4"></line>
+        <line id="extB" x1="60" y1="240" x2="20" y2="260" stroke="#888" stroke-width="3" stroke-dasharray="6 4"></line>
+        <line id="extC" x1="240" y1="240" x2="300" y2="260" stroke="#888" stroke-width="3" stroke-dasharray="6 4"></line>
+
+        <!-- 三角形 -->
+        <polygon id="triangle" points="60,240 240,240 160,80" fill="none" stroke="#0c2a46" stroke-width="3"></polygon>
+
+        <!-- 内角弧 -->
+        <path id="arcA" d="" stroke="#ff7b72" stroke-width="4" fill="none"></path>
+        <path id="arcB" d="" stroke="#6ec6ff" stroke-width="4" fill="none"></path>
+        <path id="arcC" d="" stroke="#8be28b" stroke-width="4" fill="none"></path>
+
+        <!-- 顶点标签 -->
+        <text id="labelA" x="150" y="70" font-size="14" font-weight="700">A</text>
+        <text id="labelB" x="42" y="245" font-size="14" font-weight="700">B</text>
+        <text id="labelC" x="250" y="245" font-size="14" font-weight="700">C</text>
+        <text id="label1" x="125" y="112" font-size="14" font-weight="700">∠1</text>
+        <text id="label2" x="28" y="262" font-size="14" font-weight="700">∠2</text>
+        <text id="label3" x="275" y="262" font-size="14" font-weight="700">∠3</text>
+
+        <!-- 可拖动圆点 -->
+        <circle id="handleA" class="handle handle-a" cx="160" cy="80" r="9"></circle>
+        <circle id="handleB" class="handle handle-b" cx="60" cy="240" r="9"></circle>
+        <circle id="handleC" class="handle handle-c" cx="240" cy="240" r="9"></circle>
+      </svg>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="grid">
+      <div class="controls">
+        <div class="bubble">也可以用滑杆重置三角形角度</div>
+        <label>角A (顶点)</label>
+        <input type="range" id="angleA" min="15" max="165" value="70">
+        <label>角B (左下)</label>
+        <input type="range" id="angleB" min="15" max="165" value="60">
+        <p class="note">滑动或拖动圆点都可以，系统会保持三角形内角和为 180°，角C 自动算出。</p>
+        <button class="button" id="showSum">算一算外角和</button>
+      </div>
+      <div>
+        <div class="results">
+          <div class="result-box" id="valA">∠A = 70°</div>
+          <div class="result-box" id="valB">∠B = 60°</div>
+          <div class="result-box" id="valC">∠C = 50°</div>
+        </div>
+        <div class="results" style="margin-top:10px;">
+          <div class="result-box" id="ext1">∠1 = 110°</div>
+          <div class="result-box" id="ext2">∠2 = 120°</div>
+          <div class="result-box" id="ext3">∠3 = 130°</div>
+        </div>
+        <div class="pill" id="sumBox">外角和 = 360° ✅</div>
+        <p class="answer" id="explain">解释：直线 180°，外角 = 180° - 内角，三个外角加起来一定是 360°。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card quiz">
+    <div>小测验：如果 ∠A = 40°，∠B = 60°，请填出 ∠C 和 ∠1 + ∠2 + ∠3。</div>
+    <label>∠C = <input id="quizC" type="number" min="1" max="179" placeholder="？"> 度</label>
+    <label>∠1 + ∠2 + ∠3 = <input id="quizSum" type="number" placeholder="？"> 度</label>
+    <button class="button" id="checkQuiz">提交答案</button>
+    <div id="quizFeedback" class="answer"></div>
+  </div>
+
+  <script>
+    const steps = Array.from(document.querySelectorAll('.step'));
+    const nextStepBtn = document.getElementById('nextStep');
+    let stepIndex = 0;
+
+    nextStepBtn.addEventListener('click', () => {
+      stepIndex = (stepIndex + 1) % steps.length;
+      steps.forEach((step, i) => step.classList.toggle('active', i === stepIndex));
+    });
+
+    const angleAInput = document.getElementById('angleA');
+    const angleBInput = document.getElementById('angleB');
+    const valA = document.getElementById('valA');
+    const valB = document.getElementById('valB');
+    const valC = document.getElementById('valC');
+    const ext1 = document.getElementById('ext1');
+    const ext2 = document.getElementById('ext2');
+    const ext3 = document.getElementById('ext3');
+    const sumBox = document.getElementById('sumBox');
+    const explain = document.getElementById('explain');
+    const showSumBtn = document.getElementById('showSum');
+
+    const svg = document.querySelector('svg');
+    const triangle = document.getElementById('triangle');
+    const arcA = document.getElementById('arcA');
+    const arcB = document.getElementById('arcB');
+    const arcC = document.getElementById('arcC');
+    const extLineA = document.getElementById('extA');
+    const extLineB = document.getElementById('extB');
+    const extLineC = document.getElementById('extC');
+    const labelA = document.getElementById('labelA');
+    const labelB = document.getElementById('labelB');
+    const labelC = document.getElementById('labelC');
+    const label1 = document.getElementById('label1');
+    const label2 = document.getElementById('label2');
+    const label3 = document.getElementById('label3');
+
+    const handleA = document.getElementById('handleA');
+    const handleB = document.getElementById('handleB');
+    const handleC = document.getElementById('handleC');
+
+    const points = {
+      A: { x: 160, y: 80 },
+      B: { x: 60, y: 240 },
+      C: { x: 240, y: 240 }
+    };
+
+    function degToRad(d) { return d * Math.PI / 180; }
+    function radToDeg(r) { return r * 180 / Math.PI; }
+
+    function clamp(value, min, max) { return Math.min(Math.max(value, min), max); }
+
+    function polygonArea(p1, p2, p3) {
+      return Math.abs((p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)) / 2);
+    }
+
+    function angleAt(p, p1, p2) {
+      const v1 = { x: p1.x - p.x, y: p1.y - p.y };
+      const v2 = { x: p2.x - p.x, y: p2.y - p.y };
+      const dot = v1.x * v2.x + v1.y * v2.y;
+      const m1 = Math.hypot(v1.x, v1.y);
+      const m2 = Math.hypot(v2.x, v2.y);
+      const cos = clamp(dot / (m1 * m2), -1, 1);
+      const ang = Math.acos(cos);
+      return radToDeg(ang);
+    }
+
+    function extendPoint(from, to, length) {
+      const vx = from.x - to.x;
+      const vy = from.y - to.y;
+      const mag = Math.hypot(vx, vy) || 1;
+      const ux = vx / mag;
+      const uy = vy / mag;
+      return { x: from.x + ux * length, y: from.y + uy * length };
+    }
+
+    function describeArc(cx, cy, startAngle, endAngle, radius) {
+      const start = degToRad(startAngle);
+      const end = degToRad(endAngle);
+      const sx = cx + radius * Math.cos(start);
+      const sy = cy + radius * Math.sin(start);
+      const ex = cx + radius * Math.cos(end);
+      const ey = cy + radius * Math.sin(end);
+      const largeArcFlag = Math.abs(endAngle - startAngle) > 180 ? 1 : 0;
+      return `M ${sx} ${sy} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${ex} ${ey}`;
+    }
+
+    function setArc(pathEl, center, v1, v2, radius) {
+      let start = Math.atan2(v1.y, v1.x) * 180 / Math.PI;
+      let end = Math.atan2(v2.y, v2.x) * 180 / Math.PI;
+      let sweep = end - start;
+      if (sweep < 0) sweep += 360;
+      if (sweep > 180) {
+        // choose shorter path
+        const temp = start;
+        start = end;
+        end = temp;
+        sweep = 360 - sweep;
+      }
+      const d = describeArc(center.x, center.y, start, end, radius);
+      pathEl.setAttribute('d', d);
+    }
+
+    function updateVisuals(fromDrag = false) {
+      // 防止三点共线
+      if (polygonArea(points.A, points.B, points.C) < 5) return;
+
+      triangle.setAttribute('points', `${points.B.x},${points.B.y} ${points.C.x},${points.C.y} ${points.A.x},${points.A.y}`);
+
+      handleA.setAttribute('cx', points.A.x); handleA.setAttribute('cy', points.A.y);
+      handleB.setAttribute('cx', points.B.x); handleB.setAttribute('cy', points.B.y);
+      handleC.setAttribute('cx', points.C.x); handleC.setAttribute('cy', points.C.y);
+
+      const extA = extendPoint(points.A, points.C, 60);
+      const extB = extendPoint(points.B, points.A, 60);
+      const extC = extendPoint(points.C, points.B, 60);
+      extLineA.setAttribute('x1', points.A.x); extLineA.setAttribute('y1', points.A.y);
+      extLineA.setAttribute('x2', extA.x); extLineA.setAttribute('y2', extA.y);
+      extLineB.setAttribute('x1', points.B.x); extLineB.setAttribute('y1', points.B.y);
+      extLineB.setAttribute('x2', extB.x); extLineB.setAttribute('y2', extB.y);
+      extLineC.setAttribute('x1', points.C.x); extLineC.setAttribute('y1', points.C.y);
+      extLineC.setAttribute('x2', extC.x); extLineC.setAttribute('y2', extC.y);
+
+      // 标签位置
+      labelA.setAttribute('x', points.A.x - 12); labelA.setAttribute('y', points.A.y - 10);
+      labelB.setAttribute('x', points.B.x - 20); labelB.setAttribute('y', points.B.y + 18);
+      labelC.setAttribute('x', points.C.x + 10); labelC.setAttribute('y', points.C.y + 18);
+      label1.setAttribute('x', (points.A.x + extA.x) / 2 - 8); label1.setAttribute('y', (points.A.y + extA.y) / 2 - 6);
+      label2.setAttribute('x', (points.B.x + extB.x) / 2 - 10); label2.setAttribute('y', (points.B.y + extB.y) / 2 + 12);
+      label3.setAttribute('x', (points.C.x + extC.x) / 2 + 6); label3.setAttribute('y', (points.C.y + extC.y) / 2 + 12);
+
+      // 角度
+      const angleAdeg = angleAt(points.A, points.B, points.C);
+      const angleBdeg = angleAt(points.B, points.C, points.A);
+      const angleCdeg = 180 - angleAdeg - angleBdeg;
+      const extAngle1 = 180 - angleAdeg;
+      const extAngle2 = 180 - angleBdeg;
+      const extAngle3 = 180 - angleCdeg;
+      const sumExt = Math.round(extAngle1 + extAngle2 + extAngle3);
+
+      if (fromDrag) {
+        angleAInput.value = Math.round(angleAdeg);
+        angleBInput.value = Math.round(angleBdeg);
+      }
+
+      valA.textContent = `∠A = ${angleAdeg.toFixed(0)}°`;
+      valB.textContent = `∠B = ${angleBdeg.toFixed(0)}°`;
+      valC.textContent = `∠C = ${angleCdeg.toFixed(0)}°`;
+      ext1.textContent = `∠1 = ${extAngle1.toFixed(0)}°`;
+      ext2.textContent = `∠2 = ${extAngle2.toFixed(0)}°`;
+      ext3.textContent = `∠3 = ${extAngle3.toFixed(0)}°`;
+      sumBox.textContent = `外角和 = ${sumExt}° ✅`;
+      explain.textContent = "外角 = 180° - 内角，内角和是 180°，所以外角和一直是 360°，不管三角形怎么变。";
+
+      // 内角弧
+      const vAB = { x: points.B.x - points.A.x, y: points.B.y - points.A.y };
+      const vAC = { x: points.C.x - points.A.x, y: points.C.y - points.A.y };
+      setArc(arcA, points.A, vAB, vAC, 26);
+
+      const vBA = { x: points.A.x - points.B.x, y: points.A.y - points.B.y };
+      const vBC = { x: points.C.x - points.B.x, y: points.C.y - points.B.y };
+      setArc(arcB, points.B, vBA, vBC, 32);
+
+      const vCB = { x: points.B.x - points.C.x, y: points.B.y - points.C.y };
+      const vCA = { x: points.A.x - points.C.x, y: points.A.y - points.C.y };
+      setArc(arcC, points.C, vCB, vCA, 32);
+    }
+
+    function buildTriangleFromAngles(aDeg, bDeg) {
+      let A = clamp(aDeg, 15, 165);
+      let B = clamp(bDeg, 15, 165);
+      let C = 180 - A - B;
+      if (C < 15) {
+        B = 180 - A - 15;
+        C = 15;
+      }
+      angleAInput.value = Math.round(A);
+      angleBInput.value = Math.round(B);
+
+      const baseLen = 200;
+      const radA = degToRad(A);
+      const radB = degToRad(B);
+      const radC = degToRad(C);
+      const scale = baseLen / Math.sin(radA);
+      const bLen = scale * Math.sin(radB);
+      const cLen = scale * Math.sin(radC);
+      const x = (cLen * cLen - bLen * bLen + baseLen * baseLen) / (2 * baseLen);
+      const y = Math.sqrt(Math.max(cLen * cLen - x * x, 4));
+
+      const offset = { x: 60, y: 260 };
+      points.B = { x: offset.x, y: offset.y };
+      points.C = { x: offset.x + baseLen, y: offset.y };
+      points.A = { x: offset.x + x, y: offset.y - y };
+      updateVisuals();
+    }
+
+    function addDrag(handle, key) {
+      let dragging = false;
+      handle.addEventListener('pointerdown', (e) => {
+        dragging = true;
+        handle.setPointerCapture(e.pointerId);
+      });
+      handle.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        const pt = getSvgPoint(e);
+        points[key].x = clamp(pt.x, 20, 320);
+        points[key].y = clamp(pt.y, 20, 300);
+        updateVisuals(true);
+      });
+      const endDrag = (e) => {
+        dragging = false;
+        if (e && handle.hasPointerCapture(e.pointerId)) handle.releasePointerCapture(e.pointerId);
+      };
+      handle.addEventListener('pointerup', endDrag);
+      handle.addEventListener('pointerleave', endDrag);
+    }
+
+    function getSvgPoint(evt) {
+      const pt = svg.createSVGPoint();
+      pt.x = evt.clientX;
+      pt.y = evt.clientY;
+      const ctm = svg.getScreenCTM().inverse();
+      const { x, y } = pt.matrixTransform(ctm);
+      return { x, y };
+    }
+
+    addDrag(handleA, 'A');
+    addDrag(handleB, 'B');
+    addDrag(handleC, 'C');
+
+    angleAInput.addEventListener('input', () => buildTriangleFromAngles(Number(angleAInput.value), Number(angleBInput.value)));
+    angleBInput.addEventListener('input', () => buildTriangleFromAngles(Number(angleAInput.value), Number(angleBInput.value)));
+    showSumBtn.addEventListener('click', () => updateVisuals());
+
+    // Quiz
+    const quizC = document.getElementById('quizC');
+    const quizSum = document.getElementById('quizSum');
+    const quizFeedback = document.getElementById('quizFeedback');
+    document.getElementById('checkQuiz').addEventListener('click', () => {
+      const c = Number(quizC.value);
+      const sum = Number(quizSum.value);
+      const correctC = 80;
+      const correctSum = 360;
+      if (c === correctC && sum === correctSum) {
+        quizFeedback.textContent = "太棒了！回答正确，外角和永远是 360°。";
+        quizFeedback.style.color = "#0b6b3c";
+      } else {
+        quizFeedback.textContent = "再想想：内角和 180°，直线 180°，外角和是多少呢？";
+        quizFeedback.style.color = "#c0392b";
+      }
+    });
+
+    buildTriangleFromAngles(70, 60);
+  </script>
+</body>
+</html>
